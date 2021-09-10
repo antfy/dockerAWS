@@ -1,0 +1,28 @@
+version: '3'
+services: 
+  mysql:
+    image: mysql
+    networks: 
+      - production-network
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: lucas
+    ports:
+      - "3306:3306"
+
+  api-antfy:
+    build: 
+      dockerfile: ./Dockerfile
+      context: .
+    image: lulukc/api-antfy
+    container_name: api-antfy
+    ports:
+      - "8080:8080"
+    networks: 
+      - production-network
+    depends_on: 
+      - mysql
+
+networks: 
+  production-network:
+    driver: bridge
