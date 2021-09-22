@@ -15,7 +15,7 @@ services:
       dockerfile: ./antfy_backend/antfy.dockerfile
       context: .
     image: lulukc/api-antfy
-    container_name: apis-antfy
+    container_name: antfy
     ports:
       - "8080:8080"
     networks: 
