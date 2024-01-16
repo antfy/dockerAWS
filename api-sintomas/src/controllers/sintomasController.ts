@@ -1,11 +1,12 @@
 import { Request, Response } from "express";
-import Sintomas from "../model/schema";
+import Sintomas from "../model/SintomasSchema";
+import Medicos from "../model/MedicoSchema";
 import Funcoes from "../service/Util";
 
 interface Sintomas {
   _id: string;
   especialidade: string;
-  sintomaId: number;
+  sintomaId: string;
   sintoma: string;
   parteCorpo: string;
   regiaoCorpo: string;
@@ -15,10 +16,33 @@ interface Especialidade {
   contador: number;
 }
 
+interface Sintoma {
+
+  sintoma: string;
+  sintomaId: string;
+}
+
 class SintomasController {
   async index(req: Request, res: Response) {
+
+    const sintomas = Array<Sintoma>();
+    const setSintomas = new Set();
     const listasSintomas = await Sintomas.find();
-    return res.json(listasSintomas);
+
+    listasSintomas.forEach((s: Sintoma) =>{
+      sintomas.push({
+        sintoma: s.sintoma,
+        sintomaId: s.sintomaId
+      })
+    })
+
+    const sintomasFiltrados = sintomas.filter((s: Sintoma) =>{
+      const duplicatedPerson = setSintomas.has(s.sintomaId);
+      setSintomas.add(s.sintomaId);
+      return !duplicatedPerson;
+    })
+
+    return res.json(sintomasFiltrados);
   }
 
   async findSitomas(req: Request, res: Response) {
@@ -30,10 +54,9 @@ class SintomasController {
 
     const { id } = req.params;
     const sintomasRequest = id.split(",");
-    // const sintomasRequest = 'teste' 
 
     const listasSintomas = await Sintomas.find({
-      sintomaId: sintomasRequest,
+      "sintomaId":{ $in: sintomasRequest },
     });
 
     listasSintomas.forEach((sintoma: any) => {
@@ -63,7 +86,16 @@ class SintomasController {
       }
     }
 
-    return res.json(especialidade);
+    const listasMedicos = await Medicos.find({
+      "especialidade": especialidade.especialidade
+    })
+
+    const retorno = {
+      especialidade,
+      listasMedicos
+    }
+
+    return res.json(retorno);
   }
 }
 export default new SintomasController();

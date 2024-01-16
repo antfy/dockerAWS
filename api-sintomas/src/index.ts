@@ -5,7 +5,7 @@ import router from "./router";
 const port = 3333;
 const app = express();
 
-mongoose.connect("mongodb://mongodb:27017/api-sintomas", {
+mongoose.connect("mongodb://localhost:27017/api-sintomas", {
   useNewUrlParser: true,
   useFindAndModify: true,
   useUnifiedTopology: true,
